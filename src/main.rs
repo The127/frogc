@@ -6,6 +6,7 @@ use cli::FrogCli;
 use crate::cli::Commands;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env_logger::init();
     let cli = FrogCli::parse();
 
     match cli.command {
