@@ -3,6 +3,7 @@ use std::{fs, io};
 use std::io::Read;
 use std::path::PathBuf;
 use fs2::FileExt;
+use crate::types;
 
 #[derive(Clone)]
 pub struct FrogContext {
@@ -35,15 +36,15 @@ impl FrogContext {
         self.container_run_dir(container_id).join("state.json")
     }
 
-    pub fn write_state(&self, container_id: &str, state: &serde_json::Value) -> io::Result<()> {
+    pub fn write_state(&self, container_id: &str, state: types::ContainerState) -> io::Result<()> {
         let state_file_path = self.state_file_path(container_id);
         let state_file = File::create(state_file_path)?;
-        serde_json::to_writer_pretty(&state_file, state)?;
+        serde_json::to_writer_pretty(&state_file, &state)?;
         state_file.sync_all()?;
         Ok(())
     }
 
-    pub fn read_state(&self, container_id: &str) -> io::Result<serde_json::Value> {
+    pub fn read_state(&self, container_id: &str) -> io::Result<types::ContainerState> {
         let path = self.state_file_path(container_id);
         let mut file = File::open(path)?;
         let mut buffer = String::new();
