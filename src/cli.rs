@@ -4,6 +4,9 @@ use clap::{Parser, Subcommand};
 #[command(name = "frogc")]
 #[command(about = "A mutable, CLI-only container runtime", long_about = None)]
 pub struct FrogCli {
+    #[arg(long)]
+    pub run_dir: Option<String>,
+
     #[command(subcommand)]
     pub(crate) command: Commands,
 }
