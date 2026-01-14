@@ -21,15 +21,19 @@ impl FrogContext {
         self.run_dir_base.join(container_id)
     }
 
-    pub fn lock_container(&self, container_id: &str) -> io::Result<File> {
+    pub fn lock_container(&self, container_id: &str) -> io::Result<(bool, File)> {
         let run_dir = self.container_run_dir(container_id);
-        fs::create_dir_all(&run_dir)?;
+
+        let exists = run_dir.exists();
+        if !exists {
+            fs::create_dir_all(&run_dir)?;
+        }
 
         let lock_file_path = run_dir.join("lock");
         let lock_file = File::create(lock_file_path)?;
         lock_file.lock_exclusive()?;
 
-        Ok(lock_file)
+        Ok((exists, lock_file))
     }
 
     pub fn state_file_path(&self, container_id: &str) -> PathBuf {

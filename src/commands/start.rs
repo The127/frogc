@@ -1,6 +1,6 @@
-use std::fs::File;
+use crate::errors::ContainerError;
 
-pub fn run(container_id: String) -> Result<(), Box<dyn std::error::Error>> {
+pub fn run(container_id: String) -> Result<(), ContainerError> {
 
     Ok(())
 }
