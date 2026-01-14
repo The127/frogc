@@ -1,21 +1,21 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ContainerSpec {
     #[serde(rename = "rootfs")]
-    rootfs: String,
+    pub rootfs: String,
 
     #[serde(rename = "cmd")]
-    cmd: Vec<String>,
+    pub cmd: Vec<String>,
 
     #[serde(rename = "cpu")]
-    cpu: Option<u32>,
+    pub cpu: Option<u32>,
 
     #[serde(rename = "memory")]
-    memory: Option<u64>,
+    pub memory: Option<u64>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ContainerState {
     #[serde(rename = "id")]
     pub id: String,
