@@ -28,7 +28,7 @@ pub fn run(
     let state = types::ContainerState {
         id: container_id.clone(),
         spec,
-        status: "created".to_string(),
+        status: "stopped".to_string(),
     };
 
     context.write_state(&container_id, state).map_err(ContainerError::wrap)?;

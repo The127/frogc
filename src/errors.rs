@@ -1,6 +1,8 @@
 #[derive(Debug)]
 pub enum ContainerError {
     AlreadyExists,
+    NotFound,
+    InvalidState(String),
     WrappedError(Box<dyn std::error::Error + Send + Sync>),
 }
 
@@ -14,6 +16,8 @@ impl std::fmt::Display for ContainerError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             ContainerError::AlreadyExists => write!(f, "Container already exists"),
+            ContainerError::NotFound => write!(f, "Container not found"),
+            ContainerError::InvalidState(s) => write!(f, "Invalid state: {}", s),
             ContainerError::WrappedError(e) => write!(f, "{}", e),
         }
     }

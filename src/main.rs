@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             commands::create::run(context, spec, container_id)
         },
         Commands::Start { container_id } => {
-            commands::start::run(container_id)
+            commands::start::run(context, container_id)
         }
     };
 
@@ -30,6 +30,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         eprintln!("Error: {}", e);
         match e {
             ContainerError::AlreadyExists => process::exit(2),
+            ContainerError::NotFound => process::exit(3),
+            ContainerError::InvalidState(_) => process::exit(4),
             _ => process::exit(1),
         }
     }
