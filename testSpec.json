@@ -1,0 +1,6 @@
+{
+  "rootfs": "/var/lib/containers/web/rootfs",
+  "cmd": ["/bin/sh"],
+  "cpu": 2,
+  "memory": 536870912
+}
