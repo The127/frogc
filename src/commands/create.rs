@@ -1,7 +1,6 @@
 use std::{fs, io};
 use std::fs::File;
 use std::io::Read;
-use serde::{Deserialize, Serialize};
 use fs2::FileExt;
 use crate::types;
 
@@ -29,7 +28,7 @@ pub fn run(spec_path: String, container_id: String) -> Result<(), Box<dyn std::e
     log::info!("locking container directory");
     let lock_file_path = format!("{}/lock", run_dir);
     let lock_file = File::create(lock_file_path)?;
-    lock_file.try_lock_exclusive()?; // auto unlock on drop
+    lock_file.try_lock_exclusive()?;
 
     // write the state file
     log::info!("writing state file");
