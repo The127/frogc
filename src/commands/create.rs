@@ -3,33 +3,7 @@ use std::fs::File;
 use std::io::Read;
 use serde::{Deserialize, Serialize};
 use fs2::FileExt;
-
-#[derive(Debug, Serialize, Deserialize)]
-struct ContainerSpec {
-    #[serde(rename = "rootfs")]
-    rootfs: String,
-
-    #[serde(rename = "cmd")]
-    cmd: Vec<String>,
-
-    #[serde(rename = "cpu")]
-    cpu: Option<u32>,
-
-    #[serde(rename = "memory")]
-    memory: Option<u64>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct ContainerState {
-    #[serde(rename = "id")]
-    id: String,
-
-    #[serde(rename = "spec")]
-    spec: ContainerSpec,
-
-    #[serde(rename = "status")]
-    status: String,
-}
+use crate::types;
 
 pub fn run(spec_path: String, container_id: String) -> Result<(), Box<dyn std::error::Error>> {
     // read the spec
@@ -44,7 +18,7 @@ pub fn run(spec_path: String, container_id: String) -> Result<(), Box<dyn std::e
 
     // parse the spec
     log::info!("parsing spec");
-    let spec: ContainerSpec = serde_json::from_str(&spec_content)?;
+    let spec: types::ContainerSpec = serde_json::from_str(&spec_content)?;
 
     // create the run directory
     log::info!("creating run directory");
@@ -61,7 +35,7 @@ pub fn run(spec_path: String, container_id: String) -> Result<(), Box<dyn std::e
     log::info!("writing state file");
     let state_file_path = format!("{}/state.json", run_dir);
     let state_file = File::create(state_file_path)?;
-    let state = ContainerState {
+    let state = types::ContainerState {
         id: container_id.clone(),
         spec,
         status: "created".to_string(),
