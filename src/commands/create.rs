@@ -69,8 +69,7 @@ pub fn run(spec_path: String, container_id: String) -> Result<(), Box<dyn std::e
     serde_json::to_writer_pretty(&state_file, &state)?;
 
     // dummy start
-    log::info!("starting container");
-    println!("Would start container {} with spec: {:?}", container_id, spec_content);
+    log::info!("container created");
 
     Ok(())
 }
