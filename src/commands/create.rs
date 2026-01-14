@@ -29,6 +29,7 @@ pub fn run(
         id: container_id.clone(),
         spec,
         status: "stopped".to_string(),
+        pid: None,
     };
 
     context.write_state(&container_id, state).map_err(ContainerError::wrap)?;

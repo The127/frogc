@@ -25,4 +25,7 @@ pub struct ContainerState {
 
     #[serde(rename = "status")]
     pub status: String,
+
+    #[serde(rename = "pid")]
+    pub pid: Option<u32>,
 }
