@@ -14,8 +14,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Create { spec, container_id } => {
             commands::create::run(spec, container_id)?;
         },
-        Commands::Start { .. } => {
-            println!("Starting container");
+        Commands::Start { container_id } => {
+            commands::start::run(container_id)?;
         }
     }
 
