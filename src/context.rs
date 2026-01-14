@@ -27,7 +27,7 @@ impl FrogContext {
 
         let lock_file_path = run_dir.join("lock");
         let lock_file = File::create(lock_file_path)?;
-        lock_file.try_lock_exclusive()?;
+        lock_file.lock_exclusive()?;
 
         Ok(lock_file)
     }
