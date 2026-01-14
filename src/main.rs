@@ -1,6 +1,7 @@
 mod cli;
 mod commands;
 mod types;
+mod context;
 
 use clap::Parser;
 use cli::FrogCli;
