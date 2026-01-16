@@ -2,7 +2,7 @@ use crate::context::FrogContext;
 use crate::errors::{ContainerError, WrapError};
 use crate::types::{ContainerSpec, ContainerState};
 use nix::libc;
-use nix::libc::{O_CLOEXEC, O_DIRECTORY, O_NOFOLLOW, O_PATH, open_how};
+use nix::libc::{O_CLOEXEC, O_DIRECTORY, O_NOFOLLOW, O_PATH, open_how, MS_RDONLY};
 use nix::mount::{MntFlags, MsFlags, mount, umount, umount2};
 use nix::unistd::{chdir, execvp, fchdir, pivot_root};
 use std::ffi::CString;
@@ -74,7 +74,9 @@ fn setup_mounts(state: &ContainerState) -> Result<(), ContainerError> {
     // we change the working directory to the old root fs using the file descriptor
     // this is necessary because the following umount call does not work with file descriptors, only with paths
     fchdir(&old_root)
-        .map_err(WrapError::wrapper("changing working directory to old rootfs"))
+        .map_err(WrapError::wrapper(
+            "changing working directory to old rootfs",
+        ))
         .map_err(ContainerError::wrap)?;
 
     // unmount the old root with umount2 because we need to use MNT_DETACH to lazily unmount the filesystem
@@ -99,18 +101,15 @@ fn setup_mounts(state: &ContainerState) -> Result<(), ContainerError> {
         MsFlags::MS_SHARED | MsFlags::MS_REC,
         None::<&str>,
     )
-        .map_err(WrapError::wrapper("making mounts shared"))
-        .map_err(ContainerError::wrap)?;
+    .map_err(WrapError::wrapper("making mounts shared"))
+    .map_err(ContainerError::wrap)?;
 
     // mount required system mounts
     mount(
         Some("proc"),
         "/proc",
         Some("proc"),
-        MsFlags::MS_NOSUID
-            | MsFlags::MS_NOEXEC
-            | MsFlags::MS_RELATIME
-            | MsFlags::MS_NODEV,
+        MsFlags::MS_NOSUID | MsFlags::MS_NOEXEC | MsFlags::MS_RELATIME | MsFlags::MS_NODEV,
         None::<&str>,
     )
     .map_err(WrapError::wrapper("mounting proc"))
@@ -124,6 +123,16 @@ fn setup_mounts(state: &ContainerState) -> Result<(), ContainerError> {
         None::<&str>,
     )
     .map_err(WrapError::wrapper("mounting dev"))
+    .map_err(ContainerError::wrap)?;
+
+    mount(
+        Some("sysfs"),
+        "/sys",
+        Some("sysfs"),
+        MsFlags::MS_NOSUID | MsFlags::MS_NOEXEC | MsFlags::MS_RELATIME | MsFlags::MS_RDONLY | MsFlags::MS_NODEV,
+        None::<&str>,
+    )
+    .map_err(WrapError::wrapper("mounting sys"))
     .map_err(ContainerError::wrap)?;
 
     // we change the working directory to the container's working directory before unmounting the old root
