@@ -36,10 +36,10 @@ pub struct Mount {
     pub options: Vec<String>,
 
     #[serde(rename = "uidMappings")]
-    pub uid_mappings: Vec<LinuxIdMapping>,
+    pub uid_mappings: Option<Vec<LinuxIdMapping>>,
 
     #[serde(rename = "gidMappings")]
-    pub gid_mappings: Vec<LinuxIdMapping>,
+    pub gid_mappings: Option<Vec<LinuxIdMapping>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
