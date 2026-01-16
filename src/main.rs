@@ -1,9 +1,11 @@
 mod cli;
 mod commands;
-mod types;
+mod spec;
 mod context;
 mod errors;
 mod reexec;
+mod types;
+mod syscall;
 
 use std::process;
 use clap::Parser;

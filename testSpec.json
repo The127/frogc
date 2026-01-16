@@ -2,5 +2,37 @@
   "rootfs": "/var/beanstack/oci/graph/overlay/faaa9a11-0829-42aa-b5fd-b945a7b02a22/merged",
   "cmd": ["/bin/sh"],
   "cpu": 2,
-  "memory": 536870912
+  "memory": 536870912,
+  "mounts": [
+    {
+      "destination": "/proc",
+      "type": "proc",
+      "source": "proc",
+      "options": ["nosuid", "noexec", "nodev"]
+    },
+    {
+      "destination": "/dev",
+      "type": "tmpfs",
+      "source": "tmpfs",
+      "options": ["nosuid", "strictatime", "mode=755", "size=65536k"]
+    },
+    {
+      "destination": "/sys",
+      "type": "sysfs",
+      "source": "sysfs",
+      "options": ["nosuid", "noexec", "nodev", "ro"]
+    },
+    {
+      "destination": "/dev/pts",
+      "type": "devpts",
+      "source": "devpts",
+      "options": ["nosuid", "noexec", "newinstance", "ptmxmode=0666", "mode=0620", "gid=5"]
+    },
+    {
+      "destination": "/dev/mqueue",
+      "type": "mqueue",
+      "source": "mqueue",
+      "options": ["nosuid", "noexec", "nodev"]
+    }
+  ]
 }

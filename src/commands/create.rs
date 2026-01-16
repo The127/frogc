@@ -1,6 +1,6 @@
 use crate::context::FrogContext;
 use crate::errors::ContainerError;
-use crate::types;
+use crate::spec;
 use std::io::Read;
 use std::{fs, io};
 
@@ -18,14 +18,14 @@ pub fn run(
         fs::read_to_string(&spec_path).map_err(ContainerError::wrap)?
     };
 
-    let spec: types::ContainerSpec = serde_json::from_str(&spec_content).map_err(ContainerError::wrap)?;
+    let spec: spec::ContainerSpec = serde_json::from_str(&spec_content).map_err(ContainerError::wrap)?;
 
     let (exists, _lock) = context.lock_container(&container_id).map_err(ContainerError::wrap)?;
     if exists {
         return Err(ContainerError::AlreadyExists);
     }
 
-    let state = types::ContainerState {
+    let state = spec::ContainerState {
         id: container_id.clone(),
         spec,
         status: "stopped".to_string(),

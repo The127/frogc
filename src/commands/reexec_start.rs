@@ -1,14 +1,16 @@
 use crate::context::FrogContext;
 use crate::errors::{ContainerError, WrapError};
-use crate::types::{ContainerSpec, ContainerState};
+use crate::spec::{ContainerSpec, ContainerState};
 use nix::libc;
-use nix::libc::{O_CLOEXEC, O_DIRECTORY, O_PATH};
+use nix::libc::{mount_attr, O_CLOEXEC, O_DIRECTORY, O_PATH};
 use nix::mount::{mount, umount2, MntFlags, MsFlags};
 use nix::sys::stat::{mknod, Mode};
 use nix::unistd::{chdir, execvp, fchdir, pivot_root};
 use std::ffi::CString;
 use std::fs::OpenOptions;
 use std::os::unix::fs::OpenOptionsExt;
+use crate::types;
+use crate::types::Mount;
 
 pub fn run(context: FrogContext, container_id: String) -> Result<(), ContainerError> {
     let state = context
@@ -103,26 +105,17 @@ fn setup_mounts(state: &ContainerState) -> Result<(), ContainerError> {
     .map_err(WrapError::wrapper("making mounts shared"))
     .map_err(ContainerError::wrap)?;
 
-    // mount required system mounts
-    mount(
-        Some("proc"),
-        "/proc",
-        Some("proc"),
-        MsFlags::MS_NOSUID | MsFlags::MS_NOEXEC | MsFlags::MS_RELATIME | MsFlags::MS_NODEV,
-        None::<&str>,
-    )
-    .map_err(WrapError::wrapper("mounting proc"))
-    .map_err(ContainerError::wrap)?;
-
-    mount(
-        Some("tmpfs"),
-        "/dev",
-        Some("tmpfs"), // mount tmpfs for /dev and not devtmpfs since that would give us access to all devices from the kernel
-        MsFlags::MS_NOSUID | MsFlags::MS_RELATIME,
-        None::<&str>,
-    )
-    .map_err(WrapError::wrapper("mounting dev"))
-    .map_err(ContainerError::wrap)?;
+    for m in state.spec.mounts.iter().map(Mount::from) {
+        mount(
+            Some(m.destination.as_str()),
+            m.destination.as_str(),
+            Some(m.fs_type.as_str()),
+            m.flags,
+            m.options.as_deref(),
+        )
+            .map_err(WrapError::wrapper("mounting proc"))
+            .map_err(ContainerError::wrap)?;
+    }
 
     mknod(
         "/dev/null",

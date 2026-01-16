@@ -152,6 +152,7 @@ dependencies = [
 name = "frogc"
 version = "0.1.0"
 dependencies = [
+ "bitflags",
  "clap",
  "env_logger",
  "fs2",
