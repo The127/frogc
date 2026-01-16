@@ -40,6 +40,8 @@ pub fn run(context: FrogContext, container_id: String) -> Result<(), ContainerEr
         ).map_err(ContainerError::wrap)?
     };
 
+    nix::sys::wait::waitpid(child_pid, None).map_err(ContainerError::wrap)?;
+
     state.pid = Some(child_pid.as_raw() as u32);
 
     state.status = "running".to_string();
@@ -52,9 +54,10 @@ pub fn run(context: FrogContext, container_id: String) -> Result<(), ContainerEr
 
 
 unsafe fn child_main(id: String) -> isize {
+    println!("Child process started");
     unsafe {
         reexec::run("start".to_string(), vec![id]);
     }
-    
+
     unreachable!()
 }

@@ -12,6 +12,8 @@ use crate::cli::{Commands, ReExecCommands};
 use crate::errors::ContainerError;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    println!("Hello, world!");
+
     env_logger::init();
     let cli = FrogCli::parse();
 
