@@ -22,5 +22,17 @@ pub enum Commands {
     },
     Start {
         container_id: String,
+    },
+    #[command(hide = true)]
+    ReExec {
+        #[command(subcommand)]
+        command: ReExecCommands,
+    }
+}
+
+#[derive(Subcommand)]
+pub enum ReExecCommands {
+    Start {
+        container_id: String,
     }
 }

@@ -3,11 +3,12 @@ mod commands;
 mod types;
 mod context;
 mod errors;
+mod reexec;
 
 use std::process;
 use clap::Parser;
 use cli::FrogCli;
-use crate::cli::Commands;
+use crate::cli::{Commands, ReExecCommands};
 use crate::errors::ContainerError;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -23,6 +24,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
         Commands::Start { container_id } => {
             commands::start::run(context, container_id)
+        },
+        Commands::ReExec {command} => {
+            match command {
+                ReExecCommands::Start { container_id } => {
+                    commands::reexec_start::run(context, container_id)
+                }
+            }
         }
     };
 
