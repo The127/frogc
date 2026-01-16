@@ -21,18 +21,6 @@
       "type": "sysfs",
       "source": "sysfs",
       "options": ["nosuid", "noexec", "nodev", "ro"]
-    },
-    {
-      "destination": "/dev/pts",
-      "type": "devpts",
-      "source": "devpts",
-      "options": ["nosuid", "noexec", "newinstance", "ptmxmode=0666", "mode=0620", "gid=5"]
-    },
-    {
-      "destination": "/dev/mqueue",
-      "type": "mqueue",
-      "source": "mqueue",
-      "options": ["nosuid", "noexec", "nodev"]
     }
   ]
 }

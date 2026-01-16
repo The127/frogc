@@ -171,16 +171,6 @@ fn setup_mounts(state: &ContainerState) -> Result<(), ContainerError> {
     .map_err(WrapError::wrapper("creating /dev/tty"))
     .map_err(ContainerError::wrap)?;
 
-    mount(
-        Some("sysfs"),
-        "/sys",
-        Some("sysfs"),
-        MsFlags::MS_NOSUID | MsFlags::MS_NOEXEC | MsFlags::MS_RELATIME | MsFlags::MS_RDONLY | MsFlags::MS_NODEV,
-        None::<&str>,
-    )
-    .map_err(WrapError::wrapper("mounting sys"))
-    .map_err(ContainerError::wrap)?;
-
     // we change the working directory to the container's working directory before unmounting the old root
     chdir(state.spec.work_dir.as_deref().unwrap_or("/"))
         .map_err(WrapError::wrapper("changing working directory"))
