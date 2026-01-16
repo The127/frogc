@@ -5,6 +5,9 @@ pub struct ContainerSpec {
     #[serde(rename = "rootfs")]
     pub rootfs: String,
 
+    #[serde(rename = "workDir")]
+    pub work_dir: Option<String>,
+
     #[serde(rename = "cmd")]
     pub cmd: Vec<String>,
 
