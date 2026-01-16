@@ -8,8 +8,6 @@ use crate::errors::ContainerError;
 use crate::types::ContainerSpec;
 
 pub fn run(context: FrogContext, container_id: String) -> Result<(), ContainerError> {
-    println!("rexec run");
-    log::info!("Re-executing start command");
     fs::create_dir_all("./test").map_err(ContainerError::wrap)?;
     Ok(())
 }
