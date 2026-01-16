@@ -59,12 +59,12 @@ pub fn run(context: FrogContext, container_id: String) -> Result<(), ContainerEr
         .map_err(WrapError::wrapper("setting hostname"))
         .unwrap();
 
-    exec_container(container_id.clone(), state.spec);
+    exec_container(state.spec);
 
     unreachable!()
 }
 
-fn exec_container(id: String, spec: ContainerSpec) {
+fn exec_container(spec: ContainerSpec) {
     let cmd = CString::new(spec.cmd[0].as_str()).unwrap();
     let args: Vec<CString> = spec
         .cmd
