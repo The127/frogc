@@ -4,6 +4,7 @@ use nix::unistd::execv;
 use crate::context::FrogContext;
 use crate::errors::ContainerError;
 use nix::sched::{CloneFlags, clone};
+use crate::cli::ReExecCommands;
 use crate::reexec;
 
 pub fn run(context: FrogContext, container_id: String) -> Result<(), ContainerError> {
@@ -23,22 +24,9 @@ pub fn run(context: FrogContext, container_id: String) -> Result<(), ContainerEr
         ));
     }
 
-    let flags = CloneFlags::CLONE_NEWNS
-        | CloneFlags::CLONE_NEWPID
-        | CloneFlags::CLONE_NEWUTS
-        | CloneFlags::CLONE_NEWIPC;
-
-    const STACK_SIZE: usize = 1024 * 1024;
-    let mut stack = vec![0u8; STACK_SIZE];
-
-    let child_pid = unsafe {
-        clone(
-            Box::new(|| child_main(container_id.clone())),
-            &mut stack,
-            flags,
-            Some(libc::SIGCHLD),
-        ).map_err(ContainerError::wrap)?
-    };
+    let child_pid = reexec::run(ReExecCommands::Start {
+        container_id: container_id.clone(),
+    }).map_err(ContainerError::wrap)?;
 
     nix::sys::wait::waitpid(child_pid, None).map_err(ContainerError::wrap)?;
 
@@ -50,14 +38,4 @@ pub fn run(context: FrogContext, container_id: String) -> Result<(), ContainerEr
         .map_err(ContainerError::wrap)?;
 
     Ok(())
-}
-
-
-unsafe fn child_main(id: String) -> isize {
-    println!("Child process started");
-    unsafe {
-        reexec::run("start".to_string(), vec![id]);
-    }
-
-    unreachable!()
 }
