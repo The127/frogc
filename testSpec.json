@@ -1,5 +1,5 @@
 {
-  "rootfs": "/var/lib/containers/web/rootfs",
+  "rootfs": "/var/beanstack/oci/graph/overlay/2b00b135-c001-1337-a7f0-914d87e50331/merged",
   "cmd": ["/bin/sh"],
   "cpu": 2,
   "memory": 536870912
