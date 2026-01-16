@@ -1,7 +1,6 @@
 use crate::cli::ReExecCommands;
-use crate::errors::ContainerError;
 use nix::libc;
-use nix::sched::{CloneFlags, clone};
+use nix::sched::{clone, CloneFlags};
 use nix::unistd::{execv, Pid};
 use std::ffi::CString;
 

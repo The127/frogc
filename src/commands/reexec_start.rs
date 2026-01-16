@@ -3,14 +3,12 @@ use crate::errors::{ContainerError, WrapError};
 use crate::types::{ContainerSpec, ContainerState};
 use nix::libc;
 use nix::libc::{O_CLOEXEC, O_DIRECTORY, O_PATH};
-use nix::mount::{MntFlags, MsFlags, mount, umount, umount2};
+use nix::mount::{mount, umount2, MntFlags, MsFlags};
+use nix::sys::stat::{mknod, Mode};
 use nix::unistd::{chdir, execvp, fchdir, pivot_root};
 use std::ffi::CString;
-use std::fmt::format;
-use std::fs::{File, OpenOptions};
-use std::os::fd::AsRawFd;
-use std::os::unix::fs::{OpenOptionsExt, chroot};
-use nix::sys::stat::{mknod, Mode};
+use std::fs::OpenOptions;
+use std::os::unix::fs::OpenOptionsExt;
 
 pub fn run(context: FrogContext, container_id: String) -> Result<(), ContainerError> {
     let state = context
