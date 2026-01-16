@@ -2,7 +2,7 @@ use crate::context::FrogContext;
 use crate::errors::{ContainerError, WrapError};
 use crate::types::{ContainerSpec, ContainerState};
 use nix::libc;
-use nix::libc::{O_CLOEXEC, O_DIRECTORY, O_NOFOLLOW, O_PATH, open_how, MS_RDONLY};
+use nix::libc::{O_CLOEXEC, O_DIRECTORY, O_PATH};
 use nix::mount::{MntFlags, MsFlags, mount, umount, umount2};
 use nix::unistd::{chdir, execvp, fchdir, pivot_root};
 use std::ffi::CString;
@@ -10,6 +10,7 @@ use std::fmt::format;
 use std::fs::{File, OpenOptions};
 use std::os::fd::AsRawFd;
 use std::os::unix::fs::{OpenOptionsExt, chroot};
+use nix::sys::stat::{mknod, Mode};
 
 pub fn run(context: FrogContext, container_id: String) -> Result<(), ContainerError> {
     let state = context
@@ -123,6 +124,60 @@ fn setup_mounts(state: &ContainerState) -> Result<(), ContainerError> {
         None::<&str>,
     )
     .map_err(WrapError::wrapper("mounting dev"))
+    .map_err(ContainerError::wrap)?;
+
+    mknod(
+        "/dev/null",
+        nix::sys::stat::SFlag::S_IFCHR,
+        Mode::from_bits_truncate(0o777),
+        libc::makedev(1, 3),
+    )
+    .map_err(WrapError::wrapper("creating /dev/null"))
+    .map_err(ContainerError::wrap)?;
+
+    mknod(
+        "/dev/zero",
+        nix::sys::stat::SFlag::S_IFCHR,
+        Mode::from_bits_truncate(0o777),
+        libc::makedev(1, 5),
+    )
+    .map_err(WrapError::wrapper("creating /dev/zero"))
+    .map_err(ContainerError::wrap)?;
+
+    mknod(
+        "/dev/full",
+        nix::sys::stat::SFlag::S_IFCHR,
+        Mode::from_bits_truncate(0o777),
+        libc::makedev(1, 7),
+    )
+    .map_err(WrapError::wrapper("creating /dev/full"))
+    .map_err(ContainerError::wrap)?;
+
+    mknod(
+        "/dev/random",
+        nix::sys::stat::SFlag::S_IFCHR,
+        Mode::from_bits_truncate(0o777),
+        libc::makedev(1, 8),
+    )
+    .map_err(WrapError::wrapper("creating /dev/random"))
+    .map_err(ContainerError::wrap)?;
+
+    mknod(
+        "/dev/urandom",
+        nix::sys::stat::SFlag::S_IFCHR,
+        Mode::from_bits_truncate(0o777),
+        libc::makedev(1, 9),
+    )
+    .map_err(WrapError::wrapper("creating /dev/urandom"))
+    .map_err(ContainerError::wrap)?;
+
+    mknod(
+        "/dev/tty",
+        nix::sys::stat::SFlag::S_IFCHR,
+        Mode::from_bits_truncate(0o777),
+        libc::makedev(5, 0),
+    )
+    .map_err(WrapError::wrapper("creating /dev/tty"))
     .map_err(ContainerError::wrap)?;
 
     mount(
