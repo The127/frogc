@@ -113,7 +113,7 @@ fn setup_mounts(state: &ContainerState) -> Result<(), ContainerError> {
             m.flags,
             m.options.as_deref(),
         )
-            .map_err(WrapError::wrapper("mounting proc"))
+            .map_err(WrapError::wrapper(format!("mounting {}", m.destination).as_str()))
             .map_err(ContainerError::wrap)?;
     }
 
