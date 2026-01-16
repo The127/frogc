@@ -104,24 +104,22 @@ fn setup_mounts(state: &ContainerState) -> Result<(), ContainerError> {
 
     // mount required system mounts
     mount(
-        None::<&str>,
+        Some("proc"),
         "/proc",
         Some("proc"),
         MsFlags::MS_NOSUID
             | MsFlags::MS_NOEXEC
             | MsFlags::MS_RELATIME
-            | MsFlags::MS_NODEV
-            | MsFlags::MS_PRIVATE
-            | MsFlags::MS_REC,
+            | MsFlags::MS_NODEV,
         None::<&str>,
     )
     .map_err(WrapError::wrapper("mounting proc"))
     .map_err(ContainerError::wrap)?;
 
     mount(
-        None::<&str>,
+        Some("tmpfs"),
         "/dev",
-        Some("devtmpfs"),
+        Some("tmpfs"), // mount tmpfs for /dev and not devtmpfs since that would give us access to all devices from the kernel
         MsFlags::MS_NOSUID | MsFlags::MS_RELATIME,
         None::<&str>,
     )
